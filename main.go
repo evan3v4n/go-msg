@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"sync"
 	"text/template"
+
+	"github.com/evan3v4n/go-msg/chat"
 )
 
 // templ represents a single template
@@ -28,13 +30,13 @@ func main() {
 	var addr = flag.String("addr", ":8080", "The addr of the application.")
 	flag.Parse() // parse the flags
 
-	r := chat.newRoom()
+	r := chat.NewRoom()
 
 	http.Handle("/", &templateHandler{filename: "chat.html"})
 	http.Handle("/room", r)
 
 	// get the room going
-	go r.run()
+	go r.Run()
 
 	// start the web server
 	log.Println("Starting web server on", *addr)

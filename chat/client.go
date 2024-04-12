@@ -6,7 +6,7 @@ import (
 
 //client represents a single chatting user
 
-type client struct {
+type Client struct {
 
 	// socket is the web socket for this client
 	socket *websocket.Conn
@@ -18,7 +18,7 @@ type client struct {
 	room *room
 }
 
-func (c *client) read() {
+func (c *Client) Read() {
 
 	defer c.socket.Close()
 
@@ -31,7 +31,7 @@ func (c *client) read() {
 	}
 }
 
-func (c *client) write() {
+func (c *Client) Write() {
 
 	defer c.socket.Close()
 

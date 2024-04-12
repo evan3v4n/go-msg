@@ -10,13 +10,13 @@ import (
 type room struct {
 
 	// clients holds all current clients in this room.
-	clients map[*client]bool
+	clients map[*Client]bool
 
 	// join is a channel for clients wishing to join the room.
-	join chan *client
+	join chan *Client
 
 	// leave is a channel for clients wishing to leave the room.
-	leave chan *client
+	leave chan *Client
 
 	// forward is a channel that holds incoming messages that should be forwarded to the other clients.
 	forward chan []byte
@@ -24,16 +24,16 @@ type room struct {
 
 // newRoom create a new chat room
 
-func newRoom() *room {
+func NewRoom() *room {
 	return &room{
 		forward: make(chan []byte),
-		join:    make(chan *client),
-		leave:   make(chan *client),
-		clients: make(map[*client]bool),
+		join:    make(chan *Client),
+		leave:   make(chan *Client),
+		clients: make(map[*Client]bool),
 	}
 }
 
-func (r *room) run() {
+func (r *room) Run() {
 	for {
 		select {
 		case client := <-r.join:
@@ -62,13 +62,13 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		log.Fatal("ServeHTTP:", err)
 		return
 	}
-	client := &client{
+	client := &Client{
 		socket:  socket,
 		receive: make(chan []byte, messageBufferSize),
 		room:    r,
 	}
 	r.join <- client
 	defer func() { r.leave <- client }()
-	go client.write()
-	client.read()
+	go client.Write()
+	client.Read()
 }
